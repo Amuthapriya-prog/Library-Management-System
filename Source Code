@@ -1,0 +1,708 @@
+import java.util.*;
+
+import java.util.Date;
+
+import java.sql.*;
+
+public class LibraryManagementModule {
+	
+public static void main(String args[])
+	{
+		
+LibraryManagementModule l = new LibraryManagementModule();
+		
+l.db();
+	
+}
+	
+public static Connection db() {
+		
+//connection
+		
+String url = "jdbc:mysql://localhost:3306/trial";
+		
+String username = "root";
+		
+String password = "root";
+		
+Scanner sc = new Scanner(System.in);
+		
+try {
+			
+Connection connection = DriverManager.getConnection(url, username, password);
+				int choice;
+				do {
+					System.out.println("Enter 1 to view user account");
+					System.out.println("Enter 2 to view book details");
+					System.out.println("Enter 3 to view issued book details");
+					choice = sc.nextInt();
+					switch(choice)
+					{
+						case 1:
+							int m;
+							do {
+								System.out.println("Enter 1 to add user");
+								System.out.println("Enter 2 to delete user");
+								System.out.println("Enter 3 to search user account");
+								System.out.println("Enter 4 to view all account");
+								System.out.println("Enter 5 to exit");
+								System.out.println("Enter ur choice");
+								m=sc.nextInt();
+								switch(m)
+								{
+									//Inserting book
+									case 1:
+										String sql1 = "INSERT INTO details (s_id, s_name, s_email, phone_number, department, batch) VALUES (?, ?, ?, ?, ?, ?)";
+										PreparedStatement statement1 = connection.prepareStatement(sql1);
+										
+										System.out.println("Enter Student id");
+										int n=sc.nextInt();
+										System.out.println("Enter Student name");
+										sc.nextLine();
+										String sname=sc.nextLine();
+										System.out.println("Enter Student mail address");
+										String smail=sc.next();
+										System.out.println("Enter Student phone number");
+										String phno=sc.next();
+										System.out.println("Enter department");
+										String dep=sc.next();
+										System.out.println("Enter batch");
+										String sbatch=sc.next();
+										statement1.setInt(1, n);
+										statement1.setString(2, sname);
+										statement1.setString(3, smail);
+										statement1.setString(4, phno);
+										statement1.setString(5, dep);	
+										statement1.setString(6, sbatch);
+										System.out.println("---------------------------------------------------------------------------------------------------------------------------------------");
+
+										int rows = statement1.executeUpdate();
+										if(rows > 0)
+										{
+											System.out.println("1 row is inserted...!");
+										}
+										System.out.println("_______________________________________________");
+										statement1.close();
+										break;
+									//Deleting book
+									case 2: 
+										String sql2 = "DELETE FROM details WHERE (s_id = ?)";
+										PreparedStatement statement2 = connection.prepareStatement(sql2);
+										System.out.println("Enter the id of the student to be DELETED from list");
+										statement2.setInt(1, sc.nextInt());							
+										System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
+					
+										int row = statement2.executeUpdate();
+										if(row > 0)
+										{
+											System.out.println("1 row is deleted...!");
+										}
+										else
+											System.out.println("Sorry....! the row is empty!");
+										System.out.println("_________________________________________________");
+										statement2.close();
+										break;
+									//view book details
+									case 3:
+										 System.out.println("Enter the Student id to view profile");
+										 int a =sc.nextInt();
+										 String sql3 = "SELECT * FROM DETAILS WHERE s_id='"+a+"'";
+										 Statement statement3 = connection.createStatement();
+
+							             ResultSet rs = statement3.executeQuery(sql3);
+							             if(rs.next()==false) {
+							            	 System.out.println("Sorry...There is no student available with the given id in the field");
+							             }
+							             else {
+								             try {
+								            	 do
+								            	 {
+								            	 	int b_id = rs.getInt("s_id");
+													String b_name = rs.getString("s_name");
+													String b_email = rs.getString("s_email");
+													String mobile = rs.getString("phone_number");
+													String dept = rs.getString("department");
+													String b_batch = rs.getString("batch");
+													System.out.println("Student id: "+b_id + "\nStudent name: " + b_name + "\nStudent email: " + b_email + "\nPhone number: " + mobile + "\ndepartment: " + dept + "\nBatch: " + b_batch);
+													System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+								            	 }while(rs.next());
+								             }catch(SQLException e1)
+								             {
+								            	 System.out.println("sorry");
+								             }
+							             }
+										 System.out.println("_________________________________________________________");
+							             break;
+									case 4:
+										String sql4 = "SELECT * FROM details";
+										Statement statement4 = connection.createStatement();
+										ResultSet result = statement4.executeQuery(sql4);
+										
+										//int count=0;
+										
+										while(result.next())
+										{
+											int s_id = result.getInt("s_id");
+											String s_name = result.getString("s_name");
+											String s_email = result.getString("s_email");
+											String phone_number = result.getString("phone_number");
+											String department = result.getString("department");
+											String batch  = result.getString("batch");
+											
+											//count++;
+											System.out.println("Student id: " +s_id + "\nStudent name: " + s_name + "\nStudent email: " + s_email + "\nPhone number: " + phone_number + "\ndepartment: " + department + "\nBatch: " + batch);
+											System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+										}
+										System.out.println("______________________________________________________________");
+										break;
+									case 5:
+										System.out.println("U have chosen to exit...");
+										System.out.println("exited from the page  :) ");
+										System.out.println("______________________________________________________________");	
+										break;
+									default:
+										System.out.println("Enter choice from 1 - 5....!");
+								}
+							}while(m!=5);	
+							break;
+						case 2:
+							int n;
+							do {
+								System.out.println("Enter 1 to add book");
+								System.out.println("Enter 2 to delete book");
+								System.out.println("Enter 3 to search a book");
+								System.out.println("Enter 4 to view entire book list");
+								System.out.println("Enter 5 to view entire books in field");
+								System.out.println("Enter 6 to exit");
+								System.out.println("Enter ur choice");
+								n=sc.nextInt();
+								switch(n)
+								{
+									case 1:
+										String sql1 = "INSERT INTO books (b_id, b_name, b_publisher, b_pub_yr, b_field, b_author_name) VALUES (?, ?, ?, ?, ?, ?)";
+										PreparedStatement statement1 = connection.prepareStatement(sql1);
+										
+										System.out.println("Enter the Book id");
+										statement1.setInt(1, sc.nextInt());
+										System.out.println("Enter the Book name");
+										sc.nextLine();
+										String bname = sc.nextLine();
+										statement1.setString(2, bname);
+										System.out.println("Enter the Book publisher");
+										String bpub = sc.nextLine();
+										statement1.setString(3, bpub);
+										System.out.println("Enter the Book published year");
+										String bpubyr = sc.nextLine();
+										statement1.setString(4, bpubyr);
+										System.out.println("Enter the Book field/domain");
+										String bfield = sc.next();
+										statement1.setString(5, bfield);
+										System.out.println("Enter the Book Author Name");
+										sc.nextLine();
+										String baut = sc.nextLine();
+										statement1.setString(6, baut);
+										System.out.println("---------------------------------------------------------------------------------------------------------------------------------------");
+
+										int rows = statement1.executeUpdate();
+										if(rows > 0)
+										{
+											System.out.println("1 row is inserted...!");
+										}
+										System.out.println("_______________________________________________");
+
+										statement1.close();
+										break;
+									case 2: 
+										String sql2 = "DELETE FROM books WHERE (b_id = ?)";
+										PreparedStatement statement2 = connection.prepareStatement(sql2);
+										System.out.println("Enter the Book id");
+										statement2.setString(1, sc.next());
+//										statement2.setString(2, sc.next());
+										System.out.println("---------------------------------------------------------------------------------------------------------------------------------------");
+
+										int row = statement2.executeUpdate();
+										if(row > 0)
+										{
+											System.out.println("1 row is deleted...!");
+										}
+										else
+											System.out.println("Sorry....! the row is empty!");
+										System.out.println("_______________________________________________");
+
+										statement2.close();
+										break;
+									case 3:
+										System.out.println("Enter the book name to be searched");
+										 sc.nextLine();
+										 String a =sc.nextLine();
+										 String sql3 = "SELECT * FROM BOOKS WHERE b_name='"+a.toLowerCase()+"'";
+										 Statement statement3 = connection.createStatement();
+
+							             ResultSet rs = statement3.executeQuery(sql3);
+							             try {
+							            	 while(rs.next())
+							            	 {
+							            	 	int b_id = rs.getInt("b_id");
+												String b_name = rs.getString("b_name");
+												String b_publisher = rs.getString("b_publisher");
+												String b_pub_yr = rs.getString("b_pub_yr");
+												String b_field = rs.getString("b_field");
+												String b_author_name = rs.getString("b_author_name");
+												System.out.println("Book ID: " +b_id + "\nBook Name: " + b_name + "\nBook Publisher: " + b_publisher + "\nBook Published Year:  " + b_pub_yr + "\nField: " + b_field + "\nBook Author Name" + b_author_name);
+												System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+							            	 }
+							             }catch(SQLException e1)
+							             {
+							            	 System.out.println("sorry...!it does not exist...!try again:)");
+							             }
+										 System.out.println("_________________________________________________________");
+
+							             break;
+										
+									case 4:
+										String sql4 = "SELECT * FROM books";
+										Statement statement4 = connection.createStatement();
+										ResultSet result = statement4.executeQuery(sql4);
+										
+										//int count=0;
+										
+										while(result.next())
+										{
+											int r_id = result.getInt("b_id");
+											String r_name = result.getString("b_name");
+											String r_publisher = result.getString("b_publisher");
+											String r_pub_yr = result.getString("b_pub_yr");
+											String r_field = result.getString("b_field");
+											String r_author_name = result.getString("b_author_name");
+											//count++;
+											System.out.println("Book ID: " +r_id +  "\nBook Name: " + r_name + "\nBook Publisher: " + r_publisher + "\nBook Published Year:  " + r_pub_yr + "\nField: " + r_field + "\nBook Author Name: " + r_author_name);
+											System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+										}
+										 System.out.println("_________________________________________________________");
+
+										break;
+									case 5:
+										 
+										 System.out.println("Available fields : ");
+										 System.out.println("----->COMICS");
+										 System.out.println("----->MAGAZINE");
+										 System.out.println("----->MECH");
+										 System.out.println("----->CSE");
+										 System.out.println("----->ECE");
+										 System.out.println("----->IT");
+										 System.out.println("----->AGRI");
+										 System.out.println("----->GOVERNMENT EXAMS");
+										 System.out.println("\n___________________________________________________________");
+										 System.out.println("\nEnter the field");
+										 String a1 =sc.next();
+										 
+										 String sql5 = "SELECT * FROM BOOKS WHERE b_field='"+a1.toLowerCase()+"'";
+										 Statement statement5 = connection.createStatement();
+										 
+							             ResultSet res = statement5.executeQuery(sql5);
+							             if(res.next() == false)
+										 {
+							            	 System.out.println("Sorry...There is no books available in the field");
+										 }
+							             else
+							             {
+								             try {
+								            	 do
+								            	 {
+								            	 	int a_id = res.getInt("b_id");
+													String a_name = res.getString("b_name");
+													String a_publisher = res.getString("b_publisher");
+													String a_pub_yr = res.getString("b_pub_yr");
+													String a_field = res.getString("b_field");
+													String a_author_name = res.getString("b_author_name");
+													System.out.println("Book ID: " +a_id + "\nBook Name: " + a_name + "\nBook Publisher: " + a_publisher + "\nBook Published Year:  " + a_pub_yr + "\nField: " + a_field + "\nBook Author Name" + a_author_name);
+													System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+								            	 }while(res.next());
+								             }catch(SQLException e1)
+								             {
+								            	 System.out.println("sorry...!it does not exist...!try again:)");
+								             }
+							             }
+										 System.out.println("_________________________________________________________");
+
+							             break;	
+									case 6:
+										System.out.println("U have chosen to exit...");
+										System.out.println("exited from the page  :)  ");
+										System.out.println("______________________________________________________________");
+										break;
+									default:
+										System.out.println("Enter choice from 1 - 6....!");
+								}
+							}while(n!=6);	
+							break;
+						case 3:
+							int c;
+							System.out.println("Enter 1 to search---calculate fine---reset return date of book \nEnter 2 to add---delete---view book");
+							c=sc.nextInt();
+							if(c==1) {
+								int m1;
+								do {
+									System.out.println("Enter 1 to add book");
+									System.out.println("Enter 2 to delete book");
+									System.out.println("Enter 3 to view issued list");
+									System.out.println("Enter 4 to calculate fine");
+									System.out.println("Enter 5 to set return date");
+									System.out.println("Enter 6 to exit");
+									System.out.println("Enter ur choice");
+									m1=sc.nextInt();
+									switch(m1)
+									{
+										case 1:
+											String sql1 = "INSERT INTO ISSUED (i_id, i_date, s_id, b_id) VALUES (?, ?, ?, ?)";
+											PreparedStatement statement1 = connection.prepareStatement(sql1);
+											System.out.println("Enter Book Issue ID");
+											statement1.setInt(1, sc.nextInt());
+											System.out.println("Enter Book Issued Date");
+											String str=sc.next();
+											java.sql.Date sqlDate = java.sql.Date.valueOf(str);
+											statement1.setDate(2, sqlDate);
+											System.out.println("Enter Student ID");
+											statement1.setInt(3, sc.nextInt());
+											System.out.println("Enter Book ID");
+											statement1.setInt(4, sc.nextInt());
+											System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+											int rows = statement1.executeUpdate();
+											if(rows > 0)
+											{
+												System.out.println("1 row is inserted...!");
+											}
+											System.out.println("_________________________________________________________");
+
+											statement1.close();
+											break;
+										case 2: 
+											String sql2 = "DELETE FROM ISSUED WHERE (i_id = ?)";
+											PreparedStatement statement2 = connection.prepareStatement(sql2);
+											System.out.println("Enter Book Issue ID");
+											statement2.setString(1, sc.next());
+//											statement2.setString(2, sc.next());
+											System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+											int row = statement2.executeUpdate();
+											if(row > 0)
+											{
+												System.out.println("1 row is deleted...!");
+											}
+											else
+												System.out.println("Sorry....! the row is empty!");
+											System.out.println("_________________________________________________________");
+
+											statement2.close();
+											break;
+										case 3:
+											String sql3 = "SELECT * FROM issued";
+											Statement statement3 = connection.createStatement();
+											ResultSet result = statement3.executeQuery(sql3);
+											
+											//int count=0;
+											
+											while(result.next())
+											{
+												int r_id = result.getInt("i_id");
+												Date re_date = result.getDate("i_date");
+												Date r_date = result.getDate("r_date");
+												int r_period = result.getInt("period");
+												int r_fine = result.getInt("fine");
+												int s_id = result.getInt("s_id");
+												int b_id = result.getInt("b_id");
+												
+												//count++;
+												System.out.println("Book Isuue ID: " +r_id + "\nBook Issue Date: " + re_date + "\nBook Returned Date: " + r_date + "\nPeriod of Time Taken: " + r_period + "\nFine Amount: " + r_fine + "\nStudent ID: "+ s_id + "\nBook ID: " +b_id);
+												System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+											}
+											System.out.println("_________________________________________________________");
+
+											break;
+											
+										case 4:
+											 System.out.println("Enter Book Issued ID");
+											 int i=sc.nextInt();
+							
+											 String sql4="SELECT DATEDIFF(CURDATE(),I_DATE) FROM ISSUED";
+											 Statement stmt4 = connection.createStatement();
+											 //String da=sc.next();
+											 ResultSet rs10 = stmt4.executeQuery(sql4);
+											 int fine=1;
+											 while(rs10.next())
+											 {
+												 try {
+						                                String period = rs10.getString("DATEDIFF(CURDATE(),I_DATE)");
+						                                //System.out.println(period);
+						                                if(fine==i) {
+						                                	int d=Integer.parseInt(period)-15;
+						                                	int k=0;
+						                                	if(d>0)
+						                                	{
+							                                	int y=1;
+							                                	while(y<=d)
+							                                	{
+							                                		if(y>0 && y<=10)
+							                                			k++;
+							                                		else if(y>10 && y<=30)
+							                                			k+=2;
+							                                		else
+							                                			k+=3;
+							                                		//System.out.println(k + " " + y);
+							                                		y++;
+							                                		
+							                                	}
+						                                	}
+						                                	if(d>0)
+						                                	{
+							                                	System.out.println("The fine amount of is :" + k);
+							                                	stmt4.executeUpdate("UPDATE ISSUED SET FINE='"+ k +"' WHERE I_ID='"+ i +"'");
+						                                	}
+						                                	else
+						                                	{
+						                                		System.out.println("No fine amount....!");
+							                                	stmt4.executeUpdate("UPDATE ISSUED SET FINE='0' WHERE I_ID='"+ i +"'");
+
+						                                	}
+						                                	stmt4.executeUpdate("UPDATE ISSUED SET PERIOD='"+ period +"' WHERE I_ID='"+ i +"'");
+						                                	stmt4.executeUpdate("UPDATE ISSUED SET R_DATE = CURDATE() WHERE I_ID = '" + i + "'");
+						        							System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+						                                	break;
+						                                }
+						                                else {
+						                                	//System.out.println("fine before "+fine);
+						                                	fine++;
+						                                	//System.out.println("fine after "+fine);
+						                                }
+						                                 
+						                            } catch (SQLException e1) {
+						                                System.out.println(e1);
+						                            }
+											 }
+											 System.out.println("_________________________________________________________");
+
+								             break;
+										case 5:
+											System.out.println("Enter Book Issued ID");
+											int h=sc.nextInt();
+											System.out.println("Enter Return Date");
+											
+											String date1=sc.next();
+											
+											String sql5=("UPDATE trial.issued SET r_date = '"+ date1 + "' WHERE (`i_id` = '" + h + "')");
+											Statement stmt5 = connection.createStatement();
+											
+											stmt5.executeUpdate(sql5);
+											System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+											
+											System.out.println("UPDATED SUCCESSFULLY...!");
+											System.out.println("_________________________________________________________");
+											break;
+											
+										case 6:
+											System.out.println("U have chosen to exit...");
+											System.out.println("exited from the page  :)  ");
+											break;
+										default:
+											System.out.println("Enter choice from 1 - 6....!");
+									}
+								}while(m1!=6);
+								
+							}
+							else if(c==2) {
+								int n1;
+								do {
+									System.out.println("Enter 1 to view issued books using ISSUED id");
+									System.out.println("Enter 2 to view issued books using STUDENT id");
+									System.out.println("Enter 3 to view issued books using BOOK id");
+									System.out.println("Enter 4 to view issued books using DATE");
+									System.out.println("Enter 5 to exit");
+									System.out.println("Enter ur choice");
+									n1=sc.nextInt();
+									switch(n1)
+									{
+											case 1:
+												 System.out.println("Enter Book Issued ID");
+												 int a1 =sc.nextInt();
+												 String sql4 = "SELECT * FROM issued WHERE i_id='"+a1+"'";
+												 Statement stmt1 = connection.createStatement();
+
+									             ResultSet rs1 = stmt1.executeQuery(sql4);
+									             if(rs1.next() == false)
+												 {
+									            	 System.out.println("Sorry...There is no books available in the field");
+												 }
+									             else
+									             {
+										             try {
+										            	 //int cot1=0;
+										            	 do
+										            	 {
+										            		    int r_id = rs1.getInt("i_id");
+																Date r_idate = rs1.getDate("i_date");
+																Date r_date = rs1.getDate("r_date");
+																int r_period = rs1.getInt("period");
+																int r_fine = rs1.getInt("fine");
+																int s_id = rs1.getInt("s_id");
+																int b_id = rs1.getInt("b_id");
+																
+																//cot1++;
+																System.out.println("Book Isuue ID: " +r_id + "\nBook Issue Date: " + r_idate + "\nBook Returned Date: " + r_date + "\nPeriod of Time Taken: " + r_period + "\nFine Amount: " + r_fine + "\nStudent ID: "+ s_id + "\nBook ID: " +b_id);
+																System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+														}while(rs1.next());
+										             }catch(SQLException e1)
+										             {
+										            	 System.out.println("sorry...!it does not exist...!try again:)");
+										             }
+									             }
+												 System.out.println("_________________________________________________________");
+
+									             break;
+											case 2:
+												 System.out.println("Enter Student ID");
+												 int a2 =sc.nextInt();
+												 String sql5 = "SELECT * FROM issued WHERE s_id='"+a2+"'";
+												 Statement stmt2 = connection.createStatement();
+
+									             ResultSet rs2 = stmt2.executeQuery(sql5);
+									             if(rs2.next() == false)
+												 {
+									            	 System.out.println("Sorry...There is no books available in the field");
+												 }
+									             else
+									             {
+										             try {
+										            	 //int cot2=0;
+										            	 do
+										            	 {
+										            		    int r_id = rs2.getInt("i_id");
+																Date r_idate = rs2.getDate("i_date");
+																Date r_date = rs2.getDate("r_date");
+																int r_period = rs2.getInt("period");
+																int r_fine = rs2.getInt("fine");
+																int s_id = rs2.getInt("s_id");
+																int b_id = rs2.getInt("b_id");
+																
+																//cot2++;
+																System.out.println("Book Isuue ID: " +r_id + "\nBook Issue Date: " + r_idate + "\nBook Returned Date: " + r_date + "\nPeriod of Time Taken: " + r_period + "\nFine Amount: " + r_fine + "\nStudent ID: "+ s_id + "\nBook ID: " +b_id);
+																System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+														}while(rs2.next());
+										             }catch(SQLException e1)
+										             {
+										            	 System.out.println("sorry...!it does not exist...!try again:)");
+										             }
+									             }
+												 System.out.println("______________________________________________________________");
+
+									             break;
+											case 3:
+												 System.out.println("Enter Book ID");
+												 int a3 =sc.nextInt();
+												 String sql6 = "SELECT * FROM issued WHERE b_id='"+a3+"'";
+												 Statement stmt3 = connection.createStatement();
+
+									             ResultSet rs3 = stmt3.executeQuery(sql6);
+									             if(rs3.next() == false)
+												 {
+									            	 System.out.println("Sorry...There is no books available in the field");
+												 }
+									             else
+									             {
+										             try {
+										            	 //int cot3=0;
+										            	 do
+										            	 {
+										            		    int r_id = rs3.getInt("i_id");
+																Date r_idate = rs3.getDate("i_date");
+																Date r_date = rs3.getDate("r_date");
+																int r_period = rs3.getInt("period");
+																int r_fine = rs3.getInt("fine");
+																int s_id = rs3.getInt("s_id");
+																int b_id = rs3.getInt("b_id");
+																
+																//cot3++;
+																System.out.println("Book Isuue ID: " +r_id + "\nBook Issue Date: " + r_idate + "\nBook Returned Date: " + r_date + "\nPeriod of Time Taken: " + r_period + "\nFine Amount: " + r_fine + "\nStudent ID: "+ s_id + "\nBook ID: " +b_id);
+																System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+														}while(rs3.next());
+										             }catch(SQLException e1)
+										             {
+										            	 System.out.println("sorry...!it does not exist...!try again:)");
+										             }
+									             }
+												 System.out.println("______________________________________________________________");
+
+									             break;
+											case 4:
+												 System.out.println("Enter Book Issue Date");
+												 String a4 =sc.next();
+												 String sql7 = "SELECT * FROM issued WHERE i_date='"+a4+"'";
+												 Statement stmt4 = connection.createStatement();
+
+									             ResultSet rs4 = stmt4.executeQuery(sql7);
+									             if(rs4.next() == false)
+												 {
+									            	 System.out.println("Sorry...There is no books available in the field");
+												 }
+									             else
+									             {
+										             try {
+										            	 //int cot4=0;
+										            	 do
+										            	 {
+										            		    int r_id = rs4.getInt("i_id");
+																Date r_idate = rs4.getDate("i_date");
+																Date r_date = rs4.getDate("r_date");
+																int r_period = rs4.getInt("period");
+																int r_fine = rs4.getInt("fine");
+																int s_id = rs4.getInt("s_id");
+																int b_id = rs4.getInt("b_id");
+																
+																//cot4++;
+																System.out.println("Book Isuue ID: " +r_id + "\nBook Issue Date: " + r_idate + "\nBook Returned Date: " + r_date + "\nPeriod of Time Taken: " + r_period + "\nFine Amount: " + r_fine + "\nStudent ID: "+ s_id + "\nBook ID: " +b_id);
+																System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+														}while(rs4.next());
+										             }catch(SQLException e1)
+										             {
+										            	 System.out.println("sorry...!it does not exist...!try again:)");
+										             }
+									             }
+												System.out.println("______________________________________________________________");
+									             break;
+											case 5:
+												System.out.println("U have chosen to exit...");
+												System.out.println("exited from the page  :)  ");
+												System.out.println("______________________________________________________________");	
+												break;
+											default :
+												System.out.println("Enter valid input... :)");
+									}
+								}while(n1!=5);
+								break;
+							}
+							case 4:
+								System.out.println("U have chosen to exit...");
+								System.out.println("exited from the page  :)  ");
+								break;
+							default :
+								System.out.println("enter valid input");
+							
+					}
+				}while(choice!=4);
+					
+			connection.close();
+			return connection;
+			//System.out.println("yaaahooo....connected to db...!");
+		} catch (SQLException e) {
+			System.out.println("error....! PLEASE CHECK UR DATA");
+			//e.printStackTrace();
+			return null;
+		}
+	}
+
